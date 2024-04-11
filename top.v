@@ -49,8 +49,6 @@ counters counters (
     .o_cent_0(o_cent_0),
     .o_cent_1(o_cent_1),
     .split(split_ed),
-    .start(start_ed),
-    .stop(stop_ed)
     .en(en)
 );
 
@@ -76,8 +74,9 @@ localparam S_IDLE = 2'b00;
 localparam S_RUNNING = 2'b01;
 localparam S_SPLIT = 2'b10;
 localparam S_STOP = 2'b11;
-reg [3:0] EA, PE;
+reg [1:0] EA;
 wire splitcontrol;
+
 
 //logica de troca de estados
 always @(posedge clk or posedge rst) begin
@@ -88,31 +87,27 @@ always @(posedge clk or posedge rst) begin
         case (EA)
             S_IDLE: begin
                 if (start_ed == 1) begin
-                    PE <= S_RUNNING;
+                    EA <= S_RUNNING;
                 end
-                else EA <= PE;
             end
             S_RUNNING: begin
                 if (stop_ed == 1) begin
-                    PE <= S_STOP;
+                    EA <= S_STOP;
                 end else if (split_ed == 1) begin
-                    PE <= S_SPLIT;
+                    EA <= S_SPLIT;
                 end
-                else EA <= PE;
             end
             S_SPLIT: begin
                 if (splitcontrol == 1) begin
-                PE <= S_RUNNING;
+                EA <= S_RUNNING;
                 end
-                else EA <= PE;
             end
             S_STOP: begin
                 if (start_ed == 1) begin
-                    PE <= S_RUNNING;
+                    EA <= S_RUNNING;
                 end
-                else EA <= PE;
             end
-            default: begin PE <= S_IDLE; end
+            default: begin EA <= S_IDLE; end
         endcase
     end
 end

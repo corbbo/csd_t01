@@ -21,15 +21,15 @@ always @(posedge clk or posedge rst) begin
       clock <= ~clock;
       counter_clk <= 32'd0;
       counter500 <= counter500 + 32'd1;
-      if (counter500 >= 32'd499) begin
+      if (counter500 >= 32'd49) begin
         clock_500ms <= ~clock_500ms;
         counter500 <= 32'd0;
+      end
     end
     else begin
       counter_clk <= counter_clk + 32'd1;
     end
   end
-end
 end
 
 assign clk_milisec = clock;

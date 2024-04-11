@@ -6,7 +6,6 @@ module counters
 
 reg split_en;
 reg [3:0] hr_0, hr_1, min_0, min_1, sec_0, sec_1, cent_0, cent_1;
-reg [3:0] split_hr_0, split_hr_1, split_min_0, split_min_1, split_sec_0, split_sec_1, split_cent_0, split_cent_1;
 
 // contador de tempo
 always @(posedge clk_milisec or posedge rst) begin
@@ -74,40 +73,13 @@ always @(posedge clk_milisec or posedge rst) begin
     end
 end
 
-//Quando split for ativo, guarda valores nos registradores de split
-always @(posedge split or posedge rst) begin
-    if (rst) begin
-        split_hr_0 <= 0; 
-        split_hr_1 <= 0;
-        split_min_0 <= 0;
-        split_min_1 <= 0;
-        split_sec_0 <= 0;
-        split_sec_1 <= 0;
-        split_cent_0 <= 0;
-        split_cent_1 <= 0;
-        split_en <= 0;
-    end
-    else begin
-        split_hr_0 <= hr_0; 
-        split_hr_1 <= hr_1;
-        split_min_0 <= min_0;
-        split_min_1 <= min_1;
-        split_sec_0 <= sec_0;
-        split_sec_1 <= sec_1;
-        split_cent_0 <= cent_0;
-        split_cent_1 <= cent_1;
-        split_en <= ~split_en;
-    end
-end
-
-
-assign o_hr_0 = split_en ? split_hr_0 : hr_0;
-assign o_hr_1 = split_en ? split_hr_1 : hr_1;
-assign o_min_0 = split_en ? split_min_0 : min_0;
-assign o_min_1 = split_en ? split_min_1 : min_1;
-assign o_sec_0 = split_en ? split_sec_0 : sec_0;
-assign o_sec_1 = split_en ? split_sec_1 : sec_1;
-assign o_cent_0 = split_en ? split_cent_0 : cent_0;
-assign o_cent_1 = split_en ? split_cent_1 : cent_1;
+assign o_hr_0 = hr_0;
+assign o_hr_1 = hr_1;
+assign o_min_0 = min_0;
+assign o_min_1 = min_1;
+assign o_sec_0 = sec_0;
+assign o_sec_1 = sec_1;
+assign o_cent_0 = cent_0;
+assign o_cent_1 = cent_1;
 
 endmodule
