@@ -11,7 +11,7 @@ wire [3:0] digit1, digit2, digit3, digit4, digit5, digit6, digit7, digit8;
 reg splitswitch, lightswitch;
 
 //se split for pressionado, captura o valor dos contadores e alterna a switch
-always@(posedge clk or posedge rst) begin
+always @(posedge clk or posedge rst) begin
   if (rst) begin
     split1 <= 4'b0;
     split2 <= 4'b0;
@@ -22,18 +22,19 @@ always@(posedge clk or posedge rst) begin
     split7 <= 4'b0;
     split8 <= 4'b0;
     splitswitch <= 1'b0;
-  end
-  if (splitcheck) begin
-    split1 <= cent_0;
-    split2 <= cent_1;
-    split3 <= sec_0;
-    split4 <= sec_1;
-    split5 <= min_0;
-    split6 <= min_1;
-    split7 <= hr_0;
-    split8 <= hr_1;
-    splitswitch <= ~splitswitch;
-  end
+  end else begin
+    if (splitcheck) begin
+        split1 <= cent_0;
+        split2 <= cent_1;
+        split3 <= sec_0;
+        split4 <= sec_1;
+        split5 <= min_0;
+        split6 <= min_1;
+        split7 <= hr_0;
+        split8 <= hr_1;
+        splitswitch <= ~splitswitch;
+    end
+   end
 end
 
 //se splitswitch for 1, alterna a lightswitch, que liga e desliga o display

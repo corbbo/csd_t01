@@ -1,38 +1,38 @@
 module top
 (
     input wire clk, rst, start, stop, split,
-    output wire [7:0] an, dec_ddp,
+    output wire [7:0] an, dec_ddp
 );
 
 wire start_ed, stop_ed, split_ed;
 wire clk_milisec, clk_500ms;
 wire [3:0] o_hr_0, o_hr_1, o_min_0, o_min_1, o_sec_0, o_sec_1, o_cent_0, o_cent_1;
 
-edge_detector_sintese start_ed (
+edge_detector_sintese ed_start (
     .clk(clk),
     .rst(rst),
-    .start(start),
-    .start_ed(start_ed)
+    .din(start),
+    .rising(start_ed)
 );
 
-edge_detector_sintese stop_ed (
+edge_detector_sintese ed_stop (
     .clk(clk),
     .rst(rst),
-    .start(stop),
-    .start_ed(stop_ed)
+    .din(stop),
+    .rising(stop_ed)
 );
 
-edge_detector_sintese split_ed (
+edge_detector_sintese ed_split (
     .clk(clk),
     .rst(rst),
-    .start(split),
-    .start_ed(split_ed)
+    .din(split),
+    .rising(split_ed)
 );
 
 dcm dcm (
   .rst(rst),
   .clk(clk),
-  .clk_milisec(clk_milisec)
+  .clk_milisec(clk_milisec),
   .clk_500ms(clk_500ms)
 );
 
@@ -47,14 +47,16 @@ counters counters (
     .o_sec_1(o_sec_1),
     .o_cent_0(o_cent_0),
     .o_cent_1(o_cent_1),
-    .split(split_ed)
+    .split(split_ed),
+    .start(start_ed),
+    .stop(stop_ed)
 );
 
 dm dm (
     .rst(rst),
     .clk(clk),
-    .clk_500ms(clk_500ms)
-    .splitcheck(split_ed)
+    .clk_500ms(clk_500ms),
+    .splitcheck(split_ed),
     .hr_0(o_hr_0),
     .hr_1(o_hr_1),
     .min_0(o_min_0),
@@ -73,7 +75,7 @@ localparam S_RUNNING = 2'b01;
 localparam S_SPLIT = 2'b10;
 localparam S_STOP = 2'b11;
 reg [3:0] EA, PE;
-reg splitcontrol;
+wire splitcontrol;
 
 //logica de troca de estados
 always @(posedge clk or posedge rst) begin
@@ -89,21 +91,21 @@ always @(posedge clk or posedge rst) begin
                 else EA <= PE;
             end
             S_RUNNING: begin
-                if (stop_ed = 1) begin
+                if (stop_ed == 1) begin
                     PE <= S_STOP;
-                end else if (split_ed = 1) begin
+                end else if (split_ed == 1) begin
                     PE <= S_SPLIT;
                 end
                 else EA <= PE;
             end
             S_SPLIT: begin
-                if (splitcontrol = 1) begin
+                if (splitcontrol == 1) begin
                 PE <= S_RUNNING;
                 end
                 else EA <= PE;
             end
             S_STOP: begin
-                if (start_ed = 1) begin
+                if (start_ed == 1) begin
                     PE <= S_RUNNING;
                 end
                 else EA <= PE;
