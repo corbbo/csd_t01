@@ -7,6 +7,7 @@ module top
 wire start_ed, stop_ed, split_ed;
 wire clk_milisec, clk_500ms;
 wire [3:0] o_hr_0, o_hr_1, o_min_0, o_min_1, o_sec_0, o_sec_1, o_cent_0, o_cent_1;
+reg en;
 
 edge_detector_sintese ed_start (
     .clk(clk),
@@ -50,6 +51,7 @@ counters counters (
     .split(split_ed),
     .start(start_ed),
     .stop(stop_ed)
+    .en(en)
 );
 
 dm dm (
@@ -111,6 +113,29 @@ always @(posedge clk or posedge rst) begin
                 else EA <= PE;
             end
             default: begin PE <= S_IDLE; end
+        endcase
+    end
+end
+
+always @(posedge clk or posedge rst) begin
+    if (rst) begin
+        en <= 1'b0;
+    end
+    else begin
+        case (EA)
+            S_IDLE: begin
+                en <= 1'b0;
+            end
+            S_RUNNING: begin
+                en <= 1'b1;
+            end
+            S_SPLIT: begin
+                en <= 1'b1;
+            end
+            S_STOP: begin
+                en <= 1'b0;
+            end
+            default: begin en <= 1'b0; end
         endcase
     end
 end
